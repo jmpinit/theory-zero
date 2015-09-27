@@ -35,10 +35,10 @@
  * MidiPlayer class. Used to play midi by javascript, without any plugin.
  * Requires a HTML5 browser: firefox, chrome, safari, opera, IE10+.
  *
- * The other 5 js files are from [2][3], which is a demo of [1]: 
+ * The other 5 js files are from [2][3], which is a demo of [1]:
  * [1] http://matt.west.co.tt/music/jasmid-midi-synthesis-with-javascript-and-html5-audio/
  * [2] http://jsspeccy.zxdemo.org/jasmid/
- * [3] https://github.com/gasman/jasmid 
+ * [3] https://github.com/gasman/jasmid
  *
  * Modification is done to audio.js:
  * - added function fireEventEnded().
@@ -58,7 +58,7 @@
      * @param midi    MIDI file path.
      * @param target  Target html element that this MIDI player is attached to.
      * @param loop    Optinoal. Whether loop the play. Value is true/false, default is false.
-     * @param maxLoop Optional. max number of loops to play when loop is true. 
+     * @param maxLoop Optional. max number of loops to play when loop is true.
      *                Negative or 0 means infinite. Default is 1.
      * @param end_callback Optional. Callback function when MIDI ends.
      * @author X. Chen. April 2015.
@@ -68,8 +68,8 @@
         this.target = document.getElementById(target);
         this.loop = (typeof (loop) == 'undefined') ? false : loop;
 
-        if (! loop) { 
-            this.max_loop_ct = 1; 
+        if (! loop) {
+            this.max_loop_ct = 1;
         } else {
             this.max_loop_ct = (typeof (maxLoop) == 'undefined') ? 1 : (maxLoop <= 0 ? 0 : maxLoop);
         }
@@ -100,8 +100,8 @@
     MidiPlayer.prototype.stop = function() {
         this.started = false;
         this.ct = 0;
-        if (this.audio) { 
-            this.audio.stop(); 
+        if (this.audio) {
+            this.audio.stop();
             this.audio = null;
         }
         if (this.max_loop_ct > 0) {
@@ -166,7 +166,7 @@
     // However, IE8 and before do not support HTML5 Audio tag so this still will not work.
     // See: http://www.impressivewebs.com/html5-support-ie9/
     //
-    // A private function, defined by 'var'. 
+    // A private function, defined by 'var'.
     // Original definition in [2] is: function loadRemote(path, callback) {
     var loadRemote = function(path, callback) {
         var fetch = new XMLHttpRequest();
@@ -182,7 +182,7 @@
         fetch.onreadystatechange = function() {
             if(this.readyState == 4 && this.status == 200) {
                 // munge response into a binary string
-                if (IE_HACK) { // for IE. 
+                if (IE_HACK) { // for IE.
                     var t = BinaryToArray(fetch.responseBody).toArray();
                     var ff = [];
                     var mx = t.length;
@@ -190,9 +190,9 @@
                     for (var z = 0; z < mx; z++) {
                         // t[z] here is equivalent to 't.charCodeAt(z) & 255' below.
                         // e.g., t[z] is 238, below t.charCodeAt[z] is 63470. 63470 & 255 = 238.
-                        // But IE8 has no Audio element, so can't play anyway, 
+                        // But IE8 has no Audio element, so can't play anyway,
                         // and will report this error in audio.js: 'Audio' is undefined.
-                        ff[z] = scc(t[z]); 
+                        ff[z] = scc(t[z]);
                     }
                     callback(ff.join(""));
                 } else {  // for non-IE.
@@ -217,10 +217,10 @@
 
 
 /*******************************************************************************
- * 2) vbscript.js 
+ * 2) vbscript.js
  ******************************************************************************/
 /**
- * Convert binary string to array. 
+ * Convert binary string to array.
  *
  * See:
  * [1] http://stackoverflow.com/questions/1919972/how-do-i-access-xhr-responsebody-for-binary-data-from-javascript-in-ie
@@ -247,18 +247,18 @@ if (IE_HACK) {
 /*******************************************************************************
  * Files 3) to 7) below are by:
  * Matt Westcott <matt@west.co.tt> - @gasmanic - http://matt.west.co.tt/
- * See: 
+ * See:
  * - http://matt.west.co.tt/music/jasmid-midi-synthesis-with-javascript-and-html5-audio/
  * - http://jsspeccy.zxdemo.org/jasmid/
  * - https://github.com/gasman/jasmid
  ******************************************************************************/
- 
+
 /*******************************************************************************
- * 3) audio.js. 
+ * 3) audio.js.
  ******************************************************************************/
 
 var sampleRate = 44100; /* hard-coded in Flash player */
-var context = null // XC. 
+var context = null // XC.
 // Note this may cause name conflict. So be careful of variable name "context".
 
 //
@@ -285,18 +285,18 @@ function AudioPlayer(generator, targetElement, opts) {
     if (!opts) opts = {};
     var latency = opts.latency || 1;
     var checkInterval = latency * 100 /* in ms */
-    
+
     var audioElement = new Audio();
     var webkitAudio = window.AudioContext || window.webkitAudioContext;
     var requestStop = false;
 
     if (audioElement.mozSetup) {
         audioElement.mozSetup(2, sampleRate); /* channels, sample rate */
-        
+
         var buffer = []; /* data generated but not yet written */
         var minBufferLength = latency * 2 * sampleRate; /* refill buffer when there are only this many elements remaining */
         var bufferFillLength = Math.floor(latency * sampleRate);
-        
+
         function checkBuffer() {
             if (requestStop) return; // no more data feed after request stop. xc.
             if (buffer.length) {
@@ -314,7 +314,7 @@ function AudioPlayer(generator, targetElement, opts) {
             }
         }
         checkBuffer();
-        
+
         return {
             'type': 'Firefox Audio',
             'stop': function() {
@@ -323,18 +323,18 @@ function AudioPlayer(generator, targetElement, opts) {
         }
     } else if (webkitAudio) {
         // Uses Webkit Web Audio API if available
-        
+
         // chrome stops after 5 invocation. XC. Error is:
         // Failed to construct 'AudioContext': number of hardware contexts reached maximum (6)
-        //var context = new webkitAudio(); 
+        //var context = new webkitAudio();
         if (! context) context = new webkitAudio(); // fixed by this. XC.
         sampleRate = context.sampleRate;
-        
+
         var channelCount = 2;
         var bufferSize = 4096*4; // Higher for less gitches, lower for less latency
-        
+
         var node = context.createScriptProcessor(bufferSize, 0, channelCount);
-        
+
         node.onaudioprocess = function(e) { process(e) };
 
         function process(e) {
@@ -344,7 +344,7 @@ function AudioPlayer(generator, targetElement, opts) {
                 fireEventEnded(targetElement); // xc.
                 return;
             }
-            
+
             var dataLeft = e.outputBuffer.getChannelData(0);
             var dataRight = e.outputBuffer.getChannelData(1);
 
@@ -355,10 +355,10 @@ function AudioPlayer(generator, targetElement, opts) {
                 dataRight[i] = generate[i*2+1];
             }
         }
-        
+
         // start
         node.connect(context.destination);
-        
+
         return {
             'stop': function() {
                 // pause
@@ -374,10 +374,10 @@ function AudioPlayer(generator, targetElement, opts) {
         c.innerHTML = '<embed type="application/x-shockwave-flash" id="da-swf" src="da.swf" width="8" height="8" allowScriptAccess="always" style="position: fixed; left:-10px;" />';
         document.body.appendChild(c);
         var swf = document.getElementById('da-swf');
-        
+
         var minBufferDuration = latency * 1000; /* refill buffer when there are only this many ms remaining */
         var bufferFillLength = latency * sampleRate;
-        
+
         function write(data) {
             var out = new Array(data.length);
             for (var i = data.length-1; i != 0; i--) {
@@ -385,7 +385,7 @@ function AudioPlayer(generator, targetElement, opts) {
             }
             return swf.write(out.join(' '));
         }
-        
+
         function checkBuffer() {
             if (requestStop) return; // no more data feed after request stop. xc.
             if (swf.bufferedDuration() < minBufferDuration) {
@@ -394,7 +394,7 @@ function AudioPlayer(generator, targetElement, opts) {
             if (!requestStop && !generator.finished) setTimeout(checkBuffer, checkInterval);
             if (!requestStop && generator.finished) fireEventEnded(targetElement); // xc.
         }
-        
+
         function checkReady() {
             if (swf.write) {
                 checkBuffer();
@@ -403,7 +403,7 @@ function AudioPlayer(generator, targetElement, opts) {
             }
         }
         checkReady();
-        
+
         return {
             'stop': function() {
                 swf.stop();
@@ -435,9 +435,9 @@ function MidiFile(data) {
             'data': stream.read(length)
         };
     }
-    
+
     var lastEventTypeByte;
-    
+
     function readEvent(stream) {
         var event = {};
         event.deltaTime = stream.readVarInt();
@@ -608,7 +608,7 @@ function MidiFile(data) {
                     return event;
                 default:
                     throw "Unrecognised MIDI event type: " + eventType
-                    /* 
+                    /*
                     console.log("Unrecognised MIDI event type: " + eventType);
                     stream.readInt8();
                     event.subtype = 'unknown';
@@ -617,7 +617,7 @@ function MidiFile(data) {
             }
         }
     }
-    
+
     stream = Stream(data);
     var headerChunk = readChunk(stream);
     if (headerChunk.id != 'MThd' || headerChunk.length != 6) {
@@ -627,13 +627,13 @@ function MidiFile(data) {
     var formatType = headerStream.readInt16();
     var trackCount = headerStream.readInt16();
     var timeDivision = headerStream.readInt16();
-    
+
     if (timeDivision & 0x8000) {
         throw "Expressing time division in SMTPE frames is not supported yet"
     } else {
         ticksPerBeat = timeDivision;
     }
-    
+
     var header = {
         'formatType': formatType,
         'trackCount': trackCount,
@@ -653,7 +653,7 @@ function MidiFile(data) {
             //console.log(event);
         }
     }
-    
+
     return {
         'header': header,
         'tracks': tracks
@@ -670,7 +670,7 @@ function Replayer(midiFile, synth) {
     var beatsPerMinute = 120;
     var ticksPerBeat = midiFile.header.ticksPerBeat;
     var channelCount = 16;
-    
+
     for (var i = 0; i < midiFile.tracks.length; i++) {
         trackStates[i] = {
             'nextEventIndex': 0,
@@ -681,13 +681,15 @@ function Replayer(midiFile, synth) {
             )
         };
     }
-    
-    function Channel() {
-        
+
+    function Channel(number) {
+        this.number = number;
         var generatorsByNote = {};
         var currentProgram = PianoProgram;
-        
+
         function noteOn(note, velocity) {
+            window.superSpecialNoteCallback("on", this.number, note);
+
             if (generatorsByNote[note] && !generatorsByNote[note].released) {
                 /* playing same note before releasing the last one. BOO */
                 generatorsByNote[note].noteOff(); /* TODO: check whether we ought to be passing a velocity in */
@@ -696,35 +698,38 @@ function Replayer(midiFile, synth) {
             synth.addGenerator(generator);
             generatorsByNote[note] = generator;
         }
+
         function noteOff(note, velocity) {
             if (generatorsByNote[note] && !generatorsByNote[note].released) {
+                window.superSpecialNoteCallback("off", this.number, note);
                 generatorsByNote[note].noteOff(velocity);
             }
         }
+
         function setProgram(programNumber) {
             currentProgram = PROGRAMS[programNumber] || PianoProgram;
         }
-        
+
         return {
             'noteOn': noteOn,
             'noteOff': noteOff,
             'setProgram': setProgram
         }
     }
-    
+
     var channels = [];
     for (var i = 0; i < channelCount; i++) {
-        channels[i] = Channel();
+        channels[i] = Channel(i);
     }
-    
+
     var nextEventInfo;
     var samplesToNextEvent = 0;
-    
+
     function getNextEvent() {
         var ticksToNextEvent = null;
         var nextEventTrack = null;
         var nextEventIndex = null;
-        
+
         for (var i = 0; i < trackStates.length; i++) {
             if (
                 trackStates[i].ticksToNextEvent != null
@@ -764,14 +769,14 @@ function Replayer(midiFile, synth) {
             self.finished = true;
         }
     }
-    
+
     getNextEvent();
-    
+
     function generate(samples) {
         var data = new Array(samples*2);
         var samplesRemaining = samples;
         var dataOffset = 0;
-        
+
         while (true) {
             if (samplesToNextEvent != null && samplesToNextEvent <= samplesRemaining) {
                 /* generate samplesToNextEvent samples, process event and repeat */
@@ -782,7 +787,7 @@ function Replayer(midiFile, synth) {
                     samplesRemaining -= samplesToGenerate;
                     samplesToNextEvent -= samplesToGenerate;
                 }
-                
+
                 handleEvent();
                 getNextEvent();
             } else {
@@ -796,7 +801,7 @@ function Replayer(midiFile, synth) {
         }
         return data;
     }
-    
+
     function handleEvent() {
         var event = nextEventInfo.event;
         switch (event.type) {
@@ -822,13 +827,13 @@ function Replayer(midiFile, synth) {
                 break;
         }
     }
-    
+
     function replay(audio) {
         console.log('replay');
         audio.write(generate(44100));
         setTimeout(function() {replay(audio)}, 10);
     }
-    
+
     var self = {
         'replay': replay,
         'generate': generate,
@@ -847,13 +852,13 @@ function Replayer(midiFile, synth) {
 
 function Stream(str) {
     var position = 0;
-    
+
     function read(length) {
         var result = str.substr(position, length);
         position += length;
         return result;
     }
-    
+
     /* read a big-endian 32-bit integer */
     function readInt32() {
         var result = (
@@ -873,7 +878,7 @@ function Stream(str) {
         position += 2;
         return result;
     }
-    
+
     /* read an 8-bit integer */
     function readInt8(signed) {
         var result = str.charCodeAt(position);
@@ -881,11 +886,11 @@ function Stream(str) {
         position += 1;
         return result;
     }
-    
+
     function eof() {
         return position >= str.length;
     }
-    
+
     /* read a MIDI-style variable-length integer
         (big-endian value in groups of 7 bits,
         with top bit set to signify that another byte follows)
@@ -903,7 +908,7 @@ function Stream(str) {
             }
         }
     }
-    
+
     return {
         'eof': eof,
         'read': read,
@@ -923,7 +928,7 @@ function SineGenerator(freq) {
     var self = {'alive': true};
     var period = sampleRate / freq;
     var t = 0;
-    
+
     self.generate = function(buf, offset, count) {
         for (; count; count--) {
             var phase = t / period;
@@ -933,7 +938,7 @@ function SineGenerator(freq) {
             t++;
         }
     }
-    
+
     return self;
 }
 
@@ -941,7 +946,7 @@ function SquareGenerator(freq, phase) {
     var self = {'alive': true};
     var period = sampleRate / freq;
     var t = 0;
-    
+
     self.generate = function(buf, offset, count) {
         for (; count; count--) {
             var result = ( (t / period) % 1 > phase ? 1 : -1);
@@ -950,7 +955,7 @@ function SquareGenerator(freq, phase) {
             t++;
         }
     }
-    
+
     return self;
 }
 
@@ -963,14 +968,14 @@ function ADSRGenerator(child, attackAmplitude, sustainAmplitude, attackTimeS, de
     var endTime = null; /* not known yet */
     var releaseRate = sustainAmplitude / (sampleRate * releaseTimeS);
     var t = 0;
-    
+
     self.noteOff = function() {
         if (self.released) return;
         releaseTime = t;
         self.released = true;
         endTime = releaseTime + sampleRate * releaseTimeS;
     }
-    
+
     self.generate = function(buf, offset, count) {
         if (!self.alive) return;
         var input = new Array(count * 2);
@@ -978,7 +983,7 @@ function ADSRGenerator(child, attackAmplitude, sustainAmplitude, attackTimeS, de
             input[i] = 0;
         }
         child.generate(input, 0, count);
-        
+
         childOffset = 0;
         while(count) {
             if (releaseTime != null) {
@@ -1025,7 +1030,7 @@ function ADSRGenerator(child, attackAmplitude, sustainAmplitude, attackTimeS, de
             }
         }
     }
-    
+
     return self;
 }
 
@@ -1073,19 +1078,19 @@ PROGRAMS = {
 };
 
 function Synth(sampleRate) {
-    
+
     var generators = [];
-    
+
     function addGenerator(generator) {
         generators.push(generator);
     }
-    
+
     function generate(samples) {
         var data = new Array(samples*2);
         generateIntoBuffer(samples, data, 0);
         return data;
     }
-    
+
     function generateIntoBuffer(samplesToGenerate, buffer, offset) {
         for (var i = offset; i < offset + samplesToGenerate * 2; i++) {
             buffer[i] = 0;
@@ -1095,7 +1100,7 @@ function Synth(sampleRate) {
             if (!generators[i].alive) generators.splice(i, 1);
         }
     }
-    
+
     return {
         'sampleRate': sampleRate,
         'addGenerator': addGenerator,
@@ -1103,4 +1108,3 @@ function Synth(sampleRate) {
         'generateIntoBuffer': generateIntoBuffer
     }
 }
-

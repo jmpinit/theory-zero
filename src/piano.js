@@ -61,10 +61,13 @@ var PianoInfo = (function () {
     return exports;
 })();
 
+exports.PianoInfo = PianoInfo;
+
 exports.Piano = function (root, notesOfInterest, opts) {
     this.root = root;
     this.width = opts.width || 500;
     this.height = opts.height || 100;
+    this.transpositition = 0;
 
     this.activeKeys = _.filter(PianoInfo.keys, function (key) {
         return _.filter(notesOfInterest, function (note) {
@@ -87,6 +90,36 @@ exports.Piano = function (root, notesOfInterest, opts) {
 }
 
 exports.Piano.prototype = {
+    hint: function (note, color) {
+        var key = this.noteToKey(note);
+
+        var that = this;
+        function statefulFill(transition, key, pressed) {
+            if (that.isWhite(key)) {
+                if (pressed) {
+                    this.style("fill", color);
+                } else {
+                    this.style("fill", "white");
+                }
+            } else {
+                if (pressed) {
+                    this.style("fill", color);
+                } else {
+                    this.style("fill", "black");
+                }
+            }
+        }
+
+        this.svg.select("#" + (key || ""))
+            .call(statefulFill, key, false)
+            .transition()
+            .duration(500)
+            .call(statefulFill, key, true)
+            .transition()
+            .duration(10)
+            .call(statefulFill, key, false)
+    },
+
     press: function (note) {
         var key = this.noteToKey(note);
 
@@ -119,7 +152,7 @@ exports.Piano.prototype = {
 
     noteToKey: function (note) {
         if (note < PianoInfo.keys.length) {
-            return PianoInfo.keys[note];
+            return PianoInfo.keys[(note + this.transpositition) % PianoInfo.keys.length];
         } else {
             return undefined;
         }

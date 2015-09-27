@@ -1,0 +1,29 @@
+[
+    {
+        "name": "Don't Stop Believing",
+        "part": "verse",
+        "swimlane": "images/dont-stop-believing_verse.png",
+        "notes": ["D-", "C-", "B", "A", "G-", "F-", "E", "D-", "C-", "B"],
+        "colors": {
+            "E": "red",
+            "F-": "orange",
+            "G-": "yellow",
+            "A": "green",
+            "B": "blue",
+            "C-": "purple",
+            "D-": "pink"
+        }
+    },
+    {
+        "name": "Let It Be",
+        "part": "chorus",
+        "swimlane": "images/let-it-be_chorus.png",
+        "notes": ["B", "A", "G", "F", "E", "D", "C", "B", "A", "G", "F", "E"]
+    },
+    {
+        "name": "She Will Be Loved",
+        "part": "chorus",
+        "swimlane": "images/she-will-be-loved_chorus.png",
+        "notes": ["D", "C", "B_", "A_", "G", "F", "E_", "D", "C", "B_", "A_", "G"]
+    }
+]
