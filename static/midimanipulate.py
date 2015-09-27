@@ -22,7 +22,7 @@ uSeconds = ((int(temp[1])) << 2*8) | ((int(temp[2])) << 1*8) | ((int(temp[3])) <
 
 #us/quarternote * 1 / ticks/quarternote = uS/tick
 
-msPerTick = uSeconds / (resolution*1000.0)
+msPerTick = uSeconds / (resolution*100.0)
 
 if enableLogging:
     print "ms per tick = " + str(msPerTick)
