@@ -1,0 +1,17 @@
+all {
+    stroke-width: 1px;
+}
+
+path {
+    stroke: black;
+}
+
+.black-key {
+    stroke: none;
+    fill: black;
+}
+
+.white-key {
+    stroke: none;
+    fill: white;
+}
