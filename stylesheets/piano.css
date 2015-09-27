@@ -15,3 +15,11 @@ path {
     stroke: none;
     fill: white;
 }
+
+.black-key.active {
+    fill: yellow;
+}
+
+.white-key.active {
+    fill: red;
+}
