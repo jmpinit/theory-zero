@@ -25,7 +25,7 @@ var color = require("./midi/colorspace.js");
 */
 
 
-var m;      
+var m;
 m = new MidiPlayer("song.mid", "player");
 
 $(function() {
@@ -44,3 +44,20 @@ if (navigator.requestMIDIAccess){
 }
 
 console.log("HERE");
+
+$.getJSON( "song.json", function(data) {
+  midi.queueSong(data);
+  var start = new Date().getTime();
+  var time = start;
+  function playNotes() {
+    requestAnimationFrame(playNotes);
+
+    var now = new Date().getTime();
+
+    midi.getNotes(time - start, now - start, function(note) { console.log(note) });
+
+    time = now;
+  }
+
+  requestAnimationFrame(playNotes);
+});

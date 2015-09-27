@@ -5,24 +5,25 @@
 
 var activeNotes = [];
 exports.activeNotes = activeNotes;
+var notes;
 
 exports.onMIDIInit = function(midi) {
 console.log("HERE");
 			midiAccess = midi;
-			if ((typeof(midiAccess.inputs) == "function")) { 
-				
+			if ((typeof(midiAccess.inputs) == "function")) {
+
 				var inputs=midiAccess.inputs();
-				
+
 				if (inputs.length === 0){
 					console.log('No MIDI input devices detected.');
 				}else { // Hook the message handler for all MIDI inputs
-				
+
 					for (var i=0;i<inputs.length;i++)
 						inputs[i].onmidimessage = exports.MIDIMessageEventHandler;
 					console.log('MIDI successful.');
 				}
 			} else {  // new MIDIMap implementation
-				
+
 				var haveAtLeastOneDevice=false;
 			    var inputs=midiAccess.inputs.values();
 
@@ -40,7 +41,7 @@ console.log("HERE");
 
 exports.onMIDIReject = function(err) {
 			console.log("MIDI access was rejected, despite the browser supporting it.");
-			
+
 		}
 
 exports.MIDIMessageEventHandler = function(event) {
@@ -62,7 +63,7 @@ exports.MIDIMessageEventHandler = function(event) {
 
 exports.modWheel = function(value){
 	console.log('modwheel:' + value);
-							
+
 	}
 
 exports.frequencyFromNoteNumber = function(note) {
@@ -71,11 +72,11 @@ exports.frequencyFromNoteNumber = function(note) {
 
 exports.noteOn = function(noteNumber, velocity) {
 	exports.activeNotes.push(noteNumber);
-	
+
 
 //	updateOscillatorsFromMidiChange();
-	
-//	$( '#outputNotes' ).html('MIDI notes playing: ' + activeNotes.toString());	
+
+//	$( '#outputNotes' ).html('MIDI notes playing: ' + activeNotes.toString());
 	console.log('active notes:' + exports.activeNotes);
 }
 
@@ -83,7 +84,7 @@ exports.noteOn = function(noteNumber, velocity) {
 exports.noteOff = function(noteNumber) {
 	var position = exports.activeNotes.indexOf(noteNumber);
 	if (position!=-1) { exports.activeNotes.splice(position,1); }
-	
+
 //	updateOscillatorsFromMidiChange();
 
 //	$( '#outputNotes' ).html('MIDI notes playing: ' + activeNotes.toString());
@@ -91,12 +92,34 @@ exports.noteOff = function(noteNumber) {
 
 }
 
+exports.queueSong = function(json, callback) {
+	midiCallback = callback;
+	// loop playNotes
+	var start = Date.now();
+	notes = json.midi;
+}
+
+// Guess what? This has side effects. It's simple though.
+exports.getNotes = function(start, end, callback) {
+	for(var i = 0; i < notes.length; i++ ){
+		if(notes[i].t >= start && notes[i].t < end) {
+			callback(notes[i].n);
+		}
+	}
+}
+
+// Loop through notes and call the callback on any that should have played already.
+function playNotes(notes, time) {
+
+	return -1;
+}
+
 /*
 function updateOscillatorsFromMidiChange(){
 	for (ind in oscArray){
 		//get note to play
 		var noteNumber = getNoteNumber(oscArray[ind].effectSettings['noteAssignment']);
-		
+
 		//compare to playing note and update oscillator frequency
 		if (oscArray[ind].playing != noteNumber && noteNumber){
 			var now = context.currentTime;
