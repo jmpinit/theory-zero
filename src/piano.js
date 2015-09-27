@@ -18,14 +18,14 @@ var PianoInfo = (function () {
         },
         black: {
             sharps: [
-                "A#0", "C#1", "D#1", "F#1", "G#1",
-                "A#1", "C#2", "D#2", "F#2", "G#2",
-                "A#2", "C#3", "D#3", "F#3", "G#3",
-                "A#3", "C#4", "D#4", "F#4", "G#4",
-                "A#4", "C#5", "D#5", "F#5", "G#5",
-                "A#5", "C#6", "D#6", "F#6", "G#6",
-                "A#6", "C#7", "D#7", "F#7", "G#7",
-                "A#7"
+                "A-0", "C-1", "D-1", "F-1", "G-1",
+                "A-1", "C-2", "D-2", "F-2", "G-2",
+                "A-2", "C-3", "D-3", "F-3", "G-3",
+                "A-3", "C-4", "D-4", "F-4", "G-4",
+                "A-4", "C-5", "D-5", "F-5", "G-5",
+                "A-5", "C-6", "D-6", "F-6", "G-6",
+                "A-6", "C-7", "D-7", "F-7", "G-7",
+                "A-7"
             ],
             flats: [
                 "B_0", "D_1", "E_1", "G_1", "A_1",
@@ -50,7 +50,10 @@ var PianoInfo = (function () {
             exports.keys.push(exports.white.keys[i / 2]);
         } else {
             if (hasBlack[(i - 1) / 2 % hasBlack.length]) {
-                exports.keys.push(exports.black.sharps[bi++]);
+                var sharpKey = exports.black.sharps[bi];
+                var flatKey = exports.black.flats[bi++];
+
+                exports.keys.push(sharpKey + flatKey);
             }
         }
     }
@@ -84,6 +87,52 @@ exports.Piano = function (root, notesOfInterest, opts) {
 }
 
 exports.Piano.prototype = {
+    press: function (note) {
+        var key = this.noteToKey(note);
+
+        var that = this;
+        function statefulFill(transition, key, pressed) {
+            if (that.isWhite(key)) {
+                if (pressed) {
+                    this.style("fill", "black");
+                } else {
+                    this.style("fill", "white");
+                }
+            } else {
+                if (pressed) {
+                    this.style("fill", "white");
+                } else {
+                    this.style("fill", "black");
+                }
+            }
+        }
+
+        this.svg.select("#" + (key || ""))
+            .call(statefulFill, key, false)
+            .transition()
+            .duration(100)
+            .call(statefulFill, key, true)
+            .transition()
+            .duration(10)
+            .call(statefulFill, key, false)
+    },
+
+    noteToKey: function (note) {
+        if (note < PianoInfo.keys.length) {
+            return PianoInfo.keys[note];
+        } else {
+            return undefined;
+        }
+    },
+
+    isWhite: function (key) {
+        return (key.length <= 2); // FIXME horrible hack
+    },
+
+    isBlack: function (key) {
+        return (key.length > 2); // FIXME horrible hack
+    },
+
     isActive: function (key) {
         return this.activeKeys.indexOf(key) !== -1;
     },
@@ -130,6 +179,7 @@ exports.Piano.prototype = {
     },
 
     _addKeys: function () {
+        // white keys
         for (var i = 0; i < PianoInfo.white.keys.length; i++) {
             var type = "white-key";
 
@@ -141,10 +191,12 @@ exports.Piano.prototype = {
             this.svg.append("use")
                 .attr("xlink:href", "#" + type)
                 .attr("class", type + (this.isActive(key)? " active" : ""))
+                .attr("id", key)
                 .attr("x", x)
                 .attr("y", y);
         }
 
+        // black keys
         var x = this.white.width;
 
         for (var i = 0; i < PianoInfo.black.sharps.length; i++) {
@@ -156,6 +208,7 @@ exports.Piano.prototype = {
             this.svg.append("use")
                 .attr("xlink:href", "#" + type)
                 .attr("class", type + (this.isActive(sharpKey) || this.isActive(flatKey))? " active" : "")
+                .attr("id", sharpKey + flatKey)
                 .attr("x", x)
                 .attr("y", this.white.height * 0.6 / 2);
 

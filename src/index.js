@@ -35,14 +35,18 @@ var piano = new Piano(d3.select("body"),
 // Song data
 $.getJSON( "song.json", function(data) {
     midi.queueSong(data);
+
     var start = new Date().getTime();
     var time = start;
+
     function playNotes() {
         requestAnimationFrame(playNotes);
 
         var now = new Date().getTime();
 
-        midi.getNotes(time - start, now - start, function(note) { console.log(note) });
+        midi.getNotes(time - start, now - start, function(note) {
+            piano.press(note);
+        });
 
         time = now;
     }
