@@ -71,4 +71,4 @@ gulp.task('watch', function () {
     gulp.watch(['stylesheets/**'], ['stylesheets']);
 });
 
-gulp.task('live', ['serve', 'watch']);
+gulp.task('live', ['serve', 'watch', 'js']);
