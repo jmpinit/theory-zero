@@ -42,7 +42,7 @@ function bundle() {
 }
 
 gulp.task('static', function () {
-    gulp.src('./static/*.html', {base: './static'})
+    gulp.src('./static/**', {base: './static'})
       .pipe(gulp.dest('./dist'));
 });
 
